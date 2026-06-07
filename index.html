@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HB4XH3CRL1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-HB4XH3CRL1');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
@@ -103,20 +111,20 @@ function calculateInBody() {
     let heightM = height / 100;
     let bmi = weight / (heightM * heightM);
     
-    // حساب نسبة الدهون التقريبية بناء على معادلات قديمة ومطورة
+    // حساب نسبة الدهون
     let fatPercent = (gender === 'male') ? (1.20 * bmi) + (0.23 * age) - 16.2 : (1.20 * bmi) + (0.23 * age) - 5.4;
     if(fatPercent < 3) fatPercent = 4;
 
     let fatWeight = weight * (fatPercent / 100);
-    let lbm = weight - fatWeight; // الكتلة بدون دهون
+    let lbm = weight - fatWeight; 
     
-    // حساب العضلات والماء والبروتين والأملاح بنسب حيوية متناسقة
+    // حساب المكونات الحيوية
     let muscle = lbm * 0.72;
     let water = weight * (gender === 'male' ? 0.60 : 0.50);
     let protein = lbm * 0.19;
     let minerals = lbm * 0.06;
     
-    // حساب السعرات BMR (معادلة ميفلين)
+    // حساب السعرات BMR
     let bmr = (gender === 'male') ? (10 * weight) + (6.25 * height) - (5 * age) + 5 : (10 * weight) + (6.25 * height) - (5 * age) - 161;
 
     // عرض النتائج
