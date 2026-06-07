@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة اللياقة الذكية | جهاز InBody الرقمي المتكامل</title>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #d97706;
+            --dark-color: #1e293b;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--dark-color);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 20px 0;
+            color: #1e293b;
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #cbd5e1;
+            background-color: #f1f5f9;
+            color: #64748b;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            border-color: #94a3b8;
+            background-color: #e2e8f0;
+            color: var(--dark-color);
+        }
+
+        .tab-btn.fat-tab.active {
+            background-color: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+        }
+
+        .tab-btn.calorie-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .main-container {
+            max-width: 500px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .calculator-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            display: none;
+        }
+
+        .calculator-card.active {
+            display: block;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        button.calc-submit {
+            width: 100%;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-blue { background-color: var(--primary-color); }
+        .btn-blue:hover { background-color: #1e40af; }
+        
+        .btn-amber { background-color: var(--secondary-color); }
+        .btn-amber:hover { background-color: #b45309; }
+
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .blue-border { border-right: 5px solid var(--primary-color); }
+        .amber-border { border-right: 5px solid var(--secondary-color); }
+
+        .result-item {
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .result-item strong {
+            font-size: 18px;
+        }
+        
+        .blue-text { color: var(--primary-color); }
+        .amber-text { color: var(--secondary-color); }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>منصة كمال الأجسام وتحليل الجسم الرقمي</h1>
+    <div class="nav-tabs">
+        <button class="tab-btn fat-tab active" onclick="switchTab('bodyfat', this)">تحليل الجسم المتطور (InBody)</button>
+        <button class="tab-btn calorie-tab" onclick="switchTab('calories', this)">حاسبة السعرات والـ BMI</button>
+    </div>
+</header>
+
+<div class="main-container">
+    
+    <div id="bodyfat-calc" class="calculator-card active">
+        <h2 class="amber-text">تحليل مكونات الجسم (InBody)</h2>
+        
+        <div class="form-group">
+            <label>الجنس:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="f-gender" value="male" checked> ذكر</label>
+                <label><input type="radio" name="f-gender" value="female"> أنثى</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="f-weight">الوزن الحالي (كيلوجرام):</label>
+            <input type="number" id="f-weight" placeholder="مثال: 80" required>
+        </div>
+
+        <div class="form-group">
+            <label for="f-height">الطول (سم):</label>
+            <input type="number" id="f-height" placeholder="مثال: 180" required>
+        </div>
+
+        <div class="form-group">
+            <label for="f-age">العمر:</label>
+            <input type="number" id="f-age" placeholder="مثال: 24" required>
+        </div>
+
+        <button class="calc-submit btn-amber" onclick="calculateBodyComposition()">ابدأ الفحص الرقمي</button>
+
+        <div class="result-box amber-border" id="fatResultBox">
+            <h3 style="margin-top:0; text-align:center; color: #475569;">📊 تقرير مكونات الجسم التقديري</h3>
+            <div class="result-item">نسبة دهون الجسم الإجمالية: <strong id="fatPercentageResult" class="amber-text">0%</strong></div>
+            <div class="result-item">وزن كتلة الدهون الصافية: <strong id="fatMassResult" class="amber-text">0 كجم</strong></div>
+            <div class="result-item">الكتلة العضلية والوزن بدون دهون (LBM): <strong id="leanMassResult" class="amber-text">0 كجم</strong></div>
+            
+            <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 15px 0;">
+            <h3 style="text-align:center; color: #475569;">🧪 السوائل، البروتين، والأملاح والمعادن</h3>
+            <div class="result-item">إجمالي سوائل الجسم المائية (TBW): <strong id="waterResult" class="amber-text">0 لتر</strong></div>
+            <div class="result-item">كتلة البروتين الصافي في الأنسجة: <strong id="proteinResult" class="amber-text">0 كجم</strong></div>
+            <div class="result-item">كتلة الأملاح والمعادن (العظام والخلايا): <strong id="mineralsResult" class="amber-text">0 كجم</strong></div>
+            
+            <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 15px 0;">
+            <h3 style="text-align:center; color: #475569;">💪 تقييم المستوى العضلي للجيم</h3>
+            <div class="result-item">مؤشر الكتلة العضلية النقي (FFMI): <strong id="ffmiResult" class="amber-text">0</strong></div>
+            <div class="result-item">تصنيف حجمك العضلي: <strong id="ffmiStatusResult" class="amber-text">-</strong></div>
+        </div>
+    </div>
+
+    <div id="calories-calc" class="calculator-card">
+        <h2 class="blue-text">حاسبة السعرات الحرارية والـ BMI</h2>
+        
+        <div class="form-group">
+            <label>الجنس:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="c-gender" value="male" checked> ذكر</label>
+                <label><input type="radio" name="c-gender" value="female"> أنثى</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="c-weight">الوزن الحالي (كيلوجرام):</label>
+            <input type="number" id="c-weight" placeholder="مثال: 75" required>
+        </div>
+
+        <div class="form-group">
+            <label for="c-height">الطول (سم):</label>
+            <input type="number" id="c-height" placeholder="مثال: 175" required>
+        </div>
+
+        <div class="form-group">
+            <label for="c-age">العمر:</label>
+            <input type="number" id="c-age" placeholder="مثال: 25" required>
+        </div>
+
+        <div class="form-group">
+            <label for="c-activity">مستوى النشاط والمجهود العضلي:</label>
+            <select id="c-activity">
+                <option value="1.2">خامل (لا يوجد تمارين)</option>
+                <option value="1.375">نشاط خفيف (جيم 1-3 أيام/أسبوع)</option>
+                <option value="1.55">نشاط متوسط (جيم 3-5 أيام/أسبوع)</option>
+                <option value="1.725">نشاط مكثف (جيم 6-7 أيام/أسبوع شاق)</option>
+            </select>
+        </div>
+
+        <button class="calc-submit btn-blue" onclick="calculateCalories()">احسب السعرات</button>
+
+        <div class="result-box blue-border" id="caloriesResultBox">
+            <div class="result-item">مؤشر كتلة الجسم (BMI): <strong id="bmiResult" class="blue-text">0</strong></div>
+            <div class="result-item">حالة الجسم الحالية: <strong id="statusResult" class="blue-text">-</strong></div>
+            <hr style="border: 0; border-top: 1px solid #cbd5e1; margin: 15px 0;">
+            <div class="result-item">سعرات الثبات (للحفاظ على وزنك): <strong id="caloriesResult" class="blue-text">0</strong> سعرة</div>
+            <div class="result-item">سعرات التنشيف (إنقاص الوزن والدهون): <strong id="loseResult" class="blue-text">0</strong> سعرة</div>
+            <div class="result-item">سعرات التضخيم (زيادة الوزن والكتلة العضلية): <strong id="gainResult" class="blue-text">0</strong> سعرة</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function switchTab(tabName, btn) {
+    document.querySelectorAll('.calculator-card').forEach(card => card.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+    
+    if(tabName === 'calories') {
+        document.getElementById('calories-calc').classList.add('active');
+    } else {
+        document.getElementById('bodyfat-calc').classList.add('active');
+    }
+    btn.classList.add('active');
+}
+
+function calculateCalories() {
+    const gender = document.querySelector('input[name="c-gender"]:checked').value;
+    const weight = parseFloat(document.getElementById('c-weight').value);
+    const height = parseFloat(document.getElementById('c-height').value);
+    const age = parseFloat(document.getElementById('c-age').value);
+    const activity = parseFloat(document.getElementById('c-activity').value);
+
+    if (!weight || !height || !age) { alert("برجاء ملء جميع الحقول"); return; }
+
+    const bmi = weight / ((height / 100) * (height / 100));
+    document.getElementById('bmiResult').innerText = bmi.toFixed(1);
+
+    let status = "";
+    if (bmi < 18.5) status = "نحافة";
+    else if (bmi >= 18.5 && bmi < 25) status = "وزن مثالي";
+    else if (bmi >= 25 && bmi < 30) status = "وزن زائد";
+    else status = "سمنة";
+    document.getElementById('statusResult').innerText = status;
+
+    let bmr = (gender === "male") ? 
+        (10 * weight) + (6.25 * height) - (5 * age) + 5 : 
+        (10 * weight) + (6.25 * height) - (5 * age) - 161;
+
+    const maintenanceCalories = bmr * activity;
+    document.getElementById('caloriesResult').innerText = Math.round(maintenanceCalories);
+    document.getElementById('loseResult').innerText = Math.round(maintenanceCalories - 500);
+    document.getElementById('gainResult').innerText = Math.round(maintenanceCalories + 500);
+
+    document.getElementById('caloriesResultBox').style.display = 'block';
+}
+
+function calculateBodyComposition() {
+    const gender = document.querySelector('input[name="f-gender"]:checked').value;
+    const weight = parseFloat(document.getElementById('f-weight').value);
+    const height = parseFloat(document.getElementById('f-height').value);
+    const age = parseFloat(document.getElementById('f-age').value);
+    
+    if (!weight || !height || !age) { alert("برجاء إدخال كافة البيانات المطلوبة"); return; }
+
+    const heightInMeters = height / 100;
+    const bmi = weight / (heightInMeters * heightInMeters);
+
+    // 1. حساب نسبة الدهون (Deurenberg Formula)
+    let bodyFat = 0;
+    if (gender === 'male') {
+        bodyFat = (1.20 * bmi) + (0.23 * age) - 16.2;
+    } else {
+        bodyFat = (1.20 * bmi) + (0.23 * age) - 5.4;
+    }
+
+    if (bodyFat < 2 || bodyFat > 60) { alert("برجاء التأكد من صحة البيانات المدخلة"); return; }
+
+    const fatMass = weight * (bodyFat / 100);
+    const leanMass = weight - fatMass; // الكتلة اللادهنية الكاملة
+    
+    // 2. حساب إجمالي سوائل الجسم المائية (معادلة بوستير وهوم لنسبة المياه الحيوية)
+    let totalBodyWater = 0;
+    if (gender === 'male') {
+        totalBodyWater = 2.447 - (0.09156 * age) + (0.1074 * height) + (0.3362 * weight);
+    } else {
+        totalBodyWater = -2.097 + (0.1069 * height) + (0.2466 * weight);
+    }
+    // التأكد من أن السوائل متناسقة منطقياً مع وزن الجسم اللادهني (المعدل الطبيعي حوالي 70% إلى 73% من الـ LBM)
+    if(totalBodyWater > leanMass) { totalBodyWater = leanMass * 0.71; }
+
+    // 3. حساب البروتين والمعادن (توزيع كيميائي طبيعي بناءً على الـ Lean Mass المتبقي)
+    // العظام والمعادن تمثل تقريباً من 5.5% إلى 6% من وزن الجسم اللادهني، والباقي هو بروتينات الأنسجة العضلية
+    const mineralsMass = leanMass * 0.058; 
+    const proteinMass = leanMass - totalBodyWater - mineralsMass;
+
+    // 4. حساب مؤشر الـ FFMI
+    let ffmi = leanMass / (heightInMeters * heightInMeters);
+    const normalizedFfmi = ffmi + (6.1 * (1.8 - heightInMeters));
+
+    let ffmiStatus = "";
+    if (normalizedFfmi < 18) ffmiStatus = "كتلة عضلية ضعيفة";
+    else if (normalizedFfmi >= 18 && normalizedFfmi < 20) ffmiStatus = "متوسط طبيعي";
+    else if (normalizedFfmi >= 20 && normalizedFfmi < 22) ffmiStatus = "مستوى فوق المتوسط (لاعب جيم ملتزم)";
+    else if (normalizedFfmi >= 22 && normalizedFfmi < 25) ffmiStatus = "ضخامة عضلية ممتازة (حدود جينية طبيعية)";
+    else ffmiStatus = "كتلة عضلية ضخمة جداً (نادرة طبيعياً)";
+
+    // طباعة وعرض النتائج الشاملة
+    document.getElementById('fatPercentageResult').innerText = bodyFat.toFixed(1) + "%";
+    document.getElementById('fatMassResult').innerText = fatMass.toFixed(1) + " كجم";
+    document.getElementById('leanMassResult').innerText = leanMass.toFixed(1) + " كجم";
+    
+    document.getElementById('waterResult').innerText = totalBodyWater.toFixed(1) + " لتر (كجم)";
+    document.getElementById('proteinResult').innerText = proteinMass.toFixed(1) + " كجم";
+    document.getElementById('mineralsResult').innerText = mineralsMass.toFixed(1) + " كجم";
+    
+    document.getElementById('ffmiResult').innerText = normalizedFfmi.toFixed(1);
+    document.getElementById('ffmiStatusResult').innerText = ffmiStatus;
+
+    document.getElementById('fatResultBox').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
